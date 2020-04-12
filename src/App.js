@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import TodoListTemplate from './components/TodoListTemplate';
 import Form from './components/Form';
 import TodoItemList from './components/TodoItemList';
+import Palette from './components/Palette';
 
 class App extends Component {
 
@@ -11,9 +12,15 @@ class App extends Component {
   state = {
     input: '',
     todos: [
-      { id: 0, text: ' 리액트 소개', checked: false },
-      { id: 1, text: ' 리액트 소개', checked: false },
-      { id: 2, text: ' 리액트 소개', checked: false }
+      { id: 0, text: ' 리액트 소개', color: null, checked: false },
+      { id: 1, text: ' 리액트 소개', color: null, checked: false },
+      { id: 2, text: ' 리액트 소개', color: null, checked: false }
+    ],
+    colors: [
+      { id: 'c-1', color: '#343a40', selected: false},
+      { id: 'c-2', color: '#f03e3e', selected: true},
+      { id: 'c-3', color: '#12b886', selected: false},
+      { id: 'c-4', color: '#228ae6', selected: false},
     ]
   }
 
@@ -24,13 +31,15 @@ input: e.target.value // input 의 다음 바뀔 값
   }
 
   handleCreate = () => {
-    const { input, todos } = this.state;
+    const { input, todos, colors } = this.state;
+    const color_selected = colors[colors.findIndex(elem => elem.selected)].color;
     this.setState({
       input: '', // 인풋 초기화
       // concat으로 배열에 추가
       todos: todos.concat({
         id: this.id++,
         text: input,
+        color: color_selected,
         checked: false
       })
     });
@@ -70,22 +79,51 @@ input: e.target.value // input 의 다음 바뀔 값
     });
   }
 
+  handleColorChange = (color) => {
+    const { colors } = this.state;
+
+    const index = colors.findIndex(elem => elem.color === color);
+    const selected = colors[index];
+
+    const newColors = [...colors]; // 배열 복사
+
+    newColors.map(elem => elem.selected = false);
+    newColors[index] = {
+      ...selected,
+      selected: !selected.selected
+    }
+
+    this.setState({
+      colors: newColors
+    })
+    // console.log(newColors);
+  }
+
   render() {
-    const { input, todos } = this.state;
+    const { input, todos, colors } = this.state;
     const {
       handleChange,
       handleCreate,
       handleKeyPress,
       handleToggle,
-      handleRemove
+      handleRemove,
+      handleColorChange
     } = this;
     return (
-      <TodoListTemplate form={(
+      <TodoListTemplate 
+        palette={(
+        <Palette 
+          colors={colors}
+          onChange={handleColorChange}
+        />
+        )} 
+        form={(
         <Form
           value={input}
           onKeyPress={handleKeyPress}
           onChange={handleChange}
           onCreate={handleCreate}
+          colors={colors}
         />
       )}>
         <TodoItemList todos={todos} onToggle={handleToggle} onRemove={handleRemove}/>

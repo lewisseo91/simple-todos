@@ -1,0 +1,12 @@
+.span_c{
+    width:30px;
+    height:30px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.palette-container {
+    display: flex;
+    justify-content: center;
+}
+
